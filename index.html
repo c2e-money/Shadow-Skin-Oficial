@@ -60,51 +60,37 @@
     const keysArray = ["X7Q9LM","P4ZT82","NV8KQ1","R5MX7A","J2WP9L","KD84QT","F9AZ71","MH6XP3","Q8TR5N","UY2LK7","ZP91WX","EG7RM4","CN3TY8","BV5QK2","LA8NP6","XT4MW9","QR6ZH1","DP7KA5","HY9LF3","SM2XQ8","GK5RW7","TN8VC2","AF3ZM9","PJ6LX4","WQ1NH8","RU5KD7","XE9TM2","BC4YP6","LM7QZ1","VH2RA9","KX8MP5","JQ4LT7","NF9WA2","ZD6RK8","CY3XP1","GT5MQ9","HS7VL4","PW2KN6","YA8TR3","ER1ZX7","UM4QP9","FB6LH2","DI9KW5","SQ3MT8","XN7RA4","OV2YP1","KC8TZ6","LR5WX9","ME1QF7","HP4VN3","QT8BK2","AZ6RM5","GX9LP1","JD3TW8","CU7KH4","SN2QX6","VF5MY9","BE8ZR3","WK1PA7","YL4NT2","RM9QH6","TX3VK8","QP7LD1","HF2ZW5","NM8RC4","UG5XP9","KA1TY3","CV6MQ7","DZ9LN2","PB4WR8","XE7KH5","FQ2ZT1","LR8VM6","AY5NP4","JT9QX7","MH3KC2","WN6RL8","SV1TP5","GD8ZX4","QU5MY2","BK9LF7","RC2WA6","EP7TN3","XZ4KH9","NL1QP8","TV6RM5","YM3XD2","AF8WK7","JP5ZL1","HU9QC4","DG2NX8","KR7MT6","VX1LP3","CE8RA5","SQ4WY9","TZ6KH2","BN9XM7","PL3QV8","WR5FD1"];
     const DURATION = 300000; // 5 Minutes
 
-    // Har tab ke liye unique ID generate karo
-    let tabId = localStorage.getItem("current_tab_id");
-    if (!tabId) {
-        tabId = "tab_" + Date.now();
-        localStorage.setItem("current_tab_id", tabId);
-    }
-
-    // Logic: Agar user naya tab kholega toh tabId badal jayegi, isliye naya timer milega
-    // Agar wahi tab refresh karega, toh tabId same rahegi aur wo block rahega
     function getISTDate(){ const now=new Date(); const utc=now.getTime()+now.getTimezoneOffset()*60000; return new Date(utc+19800000); }
     function generateKey(){ const d=getISTDate(); const seed=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(); return keysArray[seed%keysArray.length]; }
 
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Check block status for THIS SPECIFIC TAB
-    const isBlocked = localStorage.getItem("blocked_" + tabId);
-    const startTime = localStorage.getItem("start_" + tabId);
+    // SessionStorage use karne se har tab independent rahega
+    const startTime = sessionStorage.getItem("start_time");
+    const isBlocked = sessionStorage.getItem("is_blocked");
 
+    // Block Logic
     if (isBlocked || (startTime && (Date.now() - parseInt(startTime) >= DURATION))) {
-        localStorage.setItem("blocked_" + tabId, "true");
-        document.addEventListener("DOMContentLoaded", function() {
+        sessionStorage.setItem("is_blocked", "true");
+        document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('accessPopup').style.display = 'flex';
         });
-    }
-
-    if(urlParams.get("format")=="text") {
-        document.body.innerHTML = generateKey();
     } else {
-        if (!localStorage.getItem("blocked_" + tabId)) {
-            if (!startTime) {
-                localStorage.setItem("start_" + tabId, Date.now().toString());
-            }
-            
+        if (!startTime) {
+            sessionStorage.setItem("start_time", Date.now().toString());
+        }
+        
+        document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("passwordText").innerHTML = generateKey();
+            const elapsed = Date.now() - parseInt(sessionStorage.getItem("start_time"));
             
-            const elapsed = Date.now() - parseInt(localStorage.getItem("start_" + tabId));
-            setTimeout(function() {
-                localStorage.setItem("blocked_" + tabId, "true");
+            setTimeout(() => {
+                sessionStorage.setItem("is_blocked", "true");
                 location.reload();
             }, DURATION - elapsed);
 
             function timer(){ const now=getISTDate(); const end=getISTDate(); end.setHours(24,0,0,0); const diff=end-now; if(diff<=0){ location.reload(); return; } const h=Math.floor(diff/3600000); const m=Math.floor(diff%3600000/60000); const s=Math.floor(diff%60000/1000); document.getElementById("timer").innerHTML=String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(s).padStart(2,"0")+"s"; }
             timer(); setInterval(timer, 1000);
-        }
+        });
     }
 
     function copyKey(){ navigator.clipboard.writeText(generateKey()); const t=document.getElementById("toast"); t.style.display="block"; setTimeout(function(){ t.style.display="none"; },2000); }
