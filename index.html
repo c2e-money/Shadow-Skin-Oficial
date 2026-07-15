@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>SHADOW SKIN TOOL</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+
+background:#0f0f12;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+min-height:100vh;
+
+padding:20px;
+
+color:white;
+
+}
+
+.card{
+
+width:100%;
+
+max-width:380px;
+
+background:#181020;
+
+border:2px solid #B52FF1;
+
+border-radius:20px;
+
+padding:30px;
+
+text-align:center;
+
+box-shadow:0 0 25px rgba(181,47,241,.35);
+
+}
+
+.logo{
+
+font-size:30px;
+
+margin-bottom:15px;
+
+}
+
+.title{
+
+font-size:24px;
+
+font-weight:bold;
+
+letter-spacing:2px;
+
+}
+
+.sub{
+
+color:#aaa;
+
+margin-top:5px;
+
+font-size:13px;
+
+}
+
+.keyBox{
+
+margin-top:30px;
+
+background:#111;
+
+border:2px dashed #00ffcc;
+
+border-radius:15px;
+
+padding:16px;
+
+font-size:28px;
+
+font-weight:bold;
+
+color:#00ffcc;
+
+letter-spacing:3px;
+
+}
+
+.copyBtn{
+
+margin-top:18px;
+
+width:100%;
+
+padding:14px;
+
+border:none;
+
+border-radius:12px;
+
+background:#B52FF1;
+
+color:white;
+
+font-size:16px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+.copyBtn:hover{
+
+transform:scale(1.03);
+
+}
+
+.timerBox{
+
+margin-top:25px;
+
+padding:15px;
+
+border-radius:12px;
+
+background:#121212;
+
+border:1px solid #B52FF1;
+
+}
+
+.timerTitle{
+
+font-size:12px;
+
+color:#aaa;
+
+}
+
+.timer{
+
+margin-top:8px;
+
+font-size:24px;
+
+font-weight:bold;
+
+color:#ff4d88;
+
+}
+
+.footer{
+
+margin-top:25px;
+
+font-size:12px;
+
+color:#777;
+
+}
+
+.toast{
+
+position:fixed;
+
+bottom:30px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+background:#00ffcc;
+
+color:black;
+
+padding:12px 20px;
+
+border-radius:50px;
+
+display:none;
+
+font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="logo">
+🔐
+</div>
+
+<div class="title">
+SHADOW SKIN TOOL
+</div>
+
+<div class="sub">
+
+Official Verification Key System
+
+</div>
+
+<div class="keyBox"
+
+id="passwordText">
+
+LOADING...
+
+</div>
+
+<button
+
+class="copyBtn"
+
+onclick="copyKey()">
+
+COPY KEY
+
+</button>
+
+<div class="timerBox">
+
+<div class="timerTitle">
+
+KEY EXPIRES IN
+
+</div>
+
+<div
+
+class="timer"
+
+id="timer">
+
+00:00:00
+
+</div>
+
+</div>
+
+<div class="footer">
+
+Powered by Shadow Team
+
+</div>
+
+</div>
+
+<div
+
+class="toast"
+
+id="toast">
+
+Key Copied Successfully
+
+</div>
+
+<script>
+
+// ===========================
+// 100 KEYS
+// ===========================
+
+const keysArray=[
+"X7Q9LM","P4ZT82","NV8KQ1","R5MX7A","J2WP9L",
+"KD84QT","F9AZ71","MH6XP3","Q8TR5N","UY2LK7",
+"ZP91WX","EG7RM4","CN3TY8","BV5QK2","LA8NP6",
+"XT4MW9","QR6ZH1","DP7KA5","HY9LF3","SM2XQ8",
+"GK5RW7","TN8VC2","AF3ZM9","PJ6LX4","WQ1NH8",
+"RU5KD7","XE9TM2","BC4YP6","LM7QZ1","VH2RA9",
+"KX8MP5","JQ4LT7","NF9WA2","ZD6RK8","CY3XP1",
+"GT5MQ9","HS7VL4","PW2KN6","YA8TR3","ER1ZX7",
+"UM4QP9","FB6LH2","DI9KW5","SQ3MT8","XN7RA4",
+"OV2YP1","KC8TZ6","LR5WX9","ME1QF7","HP4VN3",
+"QT8BK2","AZ6RM5","GX9LP1","JD3TW8","CU7KH4",
+"SN2QX6","VF5MY9","BE8ZR3","WK1PA7","YL4NT2",
+"RM9QH6","TX3VK8","QP7LD1","HF2ZW5","NM8RC4",
+"UG5XP9","KA1TY3","CV6MQ7","DZ9LN2","PB4WR8",
+"XE7KH5","FQ2ZT1","LR8VM6","AY5NP4","JT9QX7",
+"MH3KC2","WN6RL8","SV1TP5","GD8ZX4","QU5MY2",
+"BK9LF7","RC2WA6","EP7TN3","XZ4KH9","NL1QP8",
+"TV6RM5","YM3XD2","AF8WK7","JP5ZL1","HU9QC4",
+"DG2NX8","KR7MT6","VX1LP3","CE8RA5","SQ4WY9",
+"TZ6KH2","BN9XM7","PL3QV8","WR5FD1"
+];
+
+function getISTDate(){
+
+const now=new Date();
+
+const utc=now.getTime()+now.getTimezoneOffset()*60000;
+
+return new Date(utc+19800000);
+
+}
+
+function generateKey(){
+
+const d=getISTDate();
+
+const seed=d.getFullYear()*10000+
+
+(d.getMonth()+1)*100+
+
+d.getDate();
+
+return keysArray[seed%keysArray.length];
+
+}
+
+const activeKey=generateKey();
+
+document.getElementById("passwordText").innerHTML=activeKey;
+
+
+//===========================
+// JSON MODE
+//===========================
+
+const params=new URLSearchParams(location.search);
+
+if(params.get("format")=="json"){
+
+document.body.innerHTML="";
+
+document.write(JSON.stringify({
+
+status:"success",
+
+password:activeKey
+
+}));
+
+}
+
+
+//===========================
+// TIMER
+//===========================
+
+function timer(){
+
+const now=getISTDate();
+
+const end=getISTDate();
+
+end.setHours(24,0,0,0);
+
+const diff=end-now;
+
+if(diff<=0){
+
+location.reload();
+
+return;
+
+}
+
+const h=Math.floor(diff/3600000);
+
+const m=Math.floor(diff%3600000/60000);
+
+const s=Math.floor(diff%60000/1000);
+
+document.getElementById("timer").innerHTML=
+
+String(h).padStart(2,"0")+"h "+
+
+String(m).padStart(2,"0")+"m "+
+
+String(s).padStart(2,"0")+"s";
+
+}
+
+timer();
+
+setInterval(timer,1000);
+
+
+//===========================
+// COPY
+//===========================
+
+function copyKey(){
+
+navigator.clipboard.writeText(activeKey);
+
+const t=document.getElementById("toast");
+
+t.style.display="block";
+
+setTimeout(function(){
+
+t.style.display="none";
+
+},2000);
+
+}
+
+</script>
+
+</body>
+
+</html>
