@@ -11,9 +11,7 @@
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:Segoe UI,sans-serif; }
         body { background:#0f0f12; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:20px; color:white; }
-        
         #accessPopup { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; justify-content:center; align-items:center; flex-direction:column; padding:20px; text-align:center; }
-        
         .card { width:100%; max-width:380px; background:#181020; border:2px solid #B52FF1; border-radius:20px; padding:30px; text-align:center; box-shadow:0 0 25px rgba(181,47,241,.35); }
         .logo { font-size:30px; margin-bottom:15px; }
         .title { font-size:24px; font-weight:bold; letter-spacing:2px; }
@@ -65,10 +63,6 @@
 <div class="toast" id="toast">Key Copied Successfully</div>
 
 <script>
-    // API & TAB LOGIC
-    const urlParams = new URLSearchParams(window.location.search);
-
-    // Keys Array
     const keysArray = ["6OGC06","M9TZ8Y","EJ9MV1","8ZZZT4","R3BX6Y","QBMLJ4","OF4SSL","A1SQ35","DUO4GY","9I79E1","XYX1JS","X6OO9X","8EYAS3","BXNHYJ","0REJ6H","EDUBA4","CJEG67","67FT9Q","7BIJOH","BHVFRZ","JSYV0F","F2MFDP","KDB3I2","7Q39MY","HPX82L","J39Z3G","V9RTHI","JT7MLP","IC05IV","ABGZNM","YY6FNI","UCA22Q","ZQA3HR","0RVJ0A","95IV7Z","CND78L","TBR9OQ","96O2O1","Y9Q2BV","CNRRRD","BB6MVC","2QOFPK","8YPVUH","KDP6O6","QQVS4S","BE98UF","ZM8AMU","82N0V7","48VRPG","MO3YXU","9Y2K50","UCGU80","DMURTX","VAAFBU","LKHW9D","GYDJ2V","DPCH1E","2JFJP9","A6EYGR","UDQ1OH","YCP77I","VVCO8X","91P5CI","PD7LHF","UP3E9N","HKMIZJ","Z9WNS1","EG0AR3","3MZB9J","0XSLMJ","GTN3OA","J1WGJY","9A7U9B","PKCEI1","OR3IFH","13E8YB","Z3P3PM","QM8397","6I9MXB","V6F53X","MHKGMN","WE7CGJ","KPH6F7","PW7SAA","R1K65L","QT67E5","X67KDZ","04IU52","SD0456","FKVZ0W","R52STD","OA9CEX","Y4D6UO","LKE51R","0Z7NID","8966QK","UAV952","A794F5","LDYGTS","O12ERK"];
 
     function getISTDate(){ 
@@ -83,15 +77,18 @@
         return keysArray[seed % keysArray.length]; 
     }
 
-    // JSON API Mode
-    if(urlParams.get("format") == "json") {
-        document.body.innerHTML = JSON.stringify({
-            status: "success",
-            key: generateKey(),
-            message: "Shadow Skin Tool API"
-        });
-    } else {
-        // Tab Tracking Mode
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // 1. Raw Text API
+    if(urlParams.get("format") == "text") {
+        document.body.innerHTML = generateKey();
+    } 
+    // 2. JSON API
+    else if(urlParams.get("format") == "json") {
+        document.body.innerHTML = JSON.stringify({ status: "success", key: generateKey() });
+    }
+    // 3. Web Interface with Tab Tracking
+    else {
         if (window.name === "shadow_tab_active") {
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('accessPopup').style.display = 'flex';
@@ -99,27 +96,20 @@
             window.name = "shadow_tab_active";
             document.getElementById("passwordText").innerHTML = generateKey();
             
-            // Timer
             function timer(){ 
-                var now = getISTDate(); 
-                var end = getISTDate(); 
-                end.setHours(24,0,0,0); 
+                var now = getISTDate(); var end = getISTDate(); end.setHours(24,0,0,0); 
                 var diff = end - now; 
                 if(diff <= 0){ location.reload(); return; } 
-                var h = Math.floor(diff/3600000); 
-                var m = Math.floor(diff%3600000/60000); 
-                var s = Math.floor(diff%60000/1000); 
+                var h = Math.floor(diff/3600000); var m = Math.floor(diff%3600000/60000); var s = Math.floor(diff%60000/1000); 
                 document.getElementById("timer").innerHTML = String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(s).padStart(2,"0")+"s"; 
             }
-            timer(); 
-            setInterval(timer, 1000);
+            timer(); setInterval(timer, 1000);
         }
     }
 
     function copyKey(){ 
         navigator.clipboard.writeText(generateKey()); 
-        var t = document.getElementById("toast"); 
-        t.style.display = "block"; 
+        var t = document.getElementById("toast"); t.style.display = "block"; 
         setTimeout(function(){ t.style.display = "none"; }, 2000); 
     }
 </script>
