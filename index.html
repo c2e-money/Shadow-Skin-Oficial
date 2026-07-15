@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHADOW SKIN TOOL</title>
+    
+    <!-- Popunder Ad -->
+    <script src="https://rightyrely.com/d7/e7/65/d7e765e7ffa0f90f007bde277a5a7b62.js"></script>
+
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:Segoe UI,sans-serif; }
         body { background:#0f0f12; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:20px; color:white; }
@@ -20,6 +24,7 @@
         .timer { margin-top:8px; font-size:24px; font-weight:bold; color:#ff4d88; }
         .footer { margin-top:25px; font-size:12px; color:#777; }
         .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#00ffcc; color:black; padding:12px 20px; border-radius:50px; display:none; font-weight:bold; }
+        .ad-container { margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -42,6 +47,14 @@
     <div class="footer">Powered by Shadow Team</div>
 </div>
 
+<!-- Banner Ad -->
+<div class="ad-container">
+    <script>
+        atOptions = { 'key' : '10334320019060e5a5a42f193415d6bc', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} };
+    </script>
+    <script src="https://rightyrely.com/10334320019060e5a5a42f193415d6bc/invoke.js"></script>
+</div>
+
 <div class="toast" id="toast">Key Copied Successfully</div>
 
 <script>
@@ -52,30 +65,26 @@
 
     const urlParams = new URLSearchParams(window.location.search);
 
-    // 1. Raw API Mode
     if(urlParams.get("format")=="text") {
         document.body.innerHTML = generateKey();
     } else {
-        // 2. Web Interface logic
-        if (localStorage.getItem("is_permanently_blocked")) {
+        if (sessionStorage.getItem("tab_is_blocked")) {
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('accessPopup').style.display = 'flex';
         } else {
-            // Har user ke liye unique start time
-            if (!localStorage.getItem("visit_start_time")) {
-                localStorage.setItem("visit_start_time", Date.now().toString());
+            if (!sessionStorage.getItem("tab_start_time")) {
+                sessionStorage.setItem("tab_start_time", Date.now().toString());
             }
-
-            const startTime = parseInt(localStorage.getItem("visit_start_time"));
+            const startTime = parseInt(sessionStorage.getItem("tab_start_time"));
             const elapsed = Date.now() - startTime;
 
             if (elapsed >= 60000) {
-                localStorage.setItem("is_permanently_blocked", "true");
+                sessionStorage.setItem("tab_is_blocked", "true");
                 location.reload();
             } else {
                 document.getElementById("passwordText").innerHTML = generateKey();
                 setTimeout(function() {
-                    localStorage.setItem("is_permanently_blocked", "true");
+                    sessionStorage.setItem("tab_is_blocked", "true");
                     location.reload();
                 }, 60000 - elapsed);
             }
