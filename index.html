@@ -52,23 +52,33 @@
 
     const urlParams = new URLSearchParams(window.location.search);
 
-    // API Mode (Raw Text)
+    // 1. Raw API Mode
     if(urlParams.get("format")=="text") {
         document.body.innerHTML = generateKey();
-    } 
-    else {
-        // Tab Tracking: Refresh hote hi localStorage check karega
-        if (localStorage.getItem("is_blocked")) {
+    } else {
+        // 2. Web Interface logic
+        if (localStorage.getItem("is_permanently_blocked")) {
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('accessPopup').style.display = 'flex';
         } else {
-            document.getElementById("passwordText").innerHTML = generateKey();
-            
-            // 1 Minute (60000 ms) baad refresh ka trigger
-            setTimeout(function() {
-                localStorage.setItem("is_blocked", "true");
+            // Har user ke liye unique start time
+            if (!localStorage.getItem("visit_start_time")) {
+                localStorage.setItem("visit_start_time", Date.now().toString());
+            }
+
+            const startTime = parseInt(localStorage.getItem("visit_start_time"));
+            const elapsed = Date.now() - startTime;
+
+            if (elapsed >= 60000) {
+                localStorage.setItem("is_permanently_blocked", "true");
                 location.reload();
-            }, 60000); 
+            } else {
+                document.getElementById("passwordText").innerHTML = generateKey();
+                setTimeout(function() {
+                    localStorage.setItem("is_permanently_blocked", "true");
+                    location.reload();
+                }, 60000 - elapsed);
+            }
 
             function timer(){ const now=getISTDate(); const end=getISTDate(); end.setHours(24,0,0,0); const diff=end-now; if(diff<=0){ location.reload(); return; } const h=Math.floor(diff/3600000); const m=Math.floor(diff%3600000/60000); const s=Math.floor(diff%60000/1000); document.getElementById("timer").innerHTML=String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(s).padStart(2,"0")+"s"; }
             timer(); setInterval(timer, 1000);
