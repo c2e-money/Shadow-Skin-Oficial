@@ -52,27 +52,24 @@
 
     const urlParams = new URLSearchParams(window.location.search);
 
-    // 1. Raw API Mode
+    // API Mode (Raw Text)
     if(urlParams.get("format")=="text") {
         document.body.innerHTML = generateKey();
-    }
-    // 2. Web Interface (Strict Tab Tracking)
+    } 
     else {
-        // Tab ke liye unique ID generate karo
-        let tabId = sessionStorage.getItem("tab_session_id");
-        if (!tabId) {
-            tabId = "tab_" + Math.random().toString(36).substr(2, 9);
-            sessionStorage.setItem("tab_session_id", tabId);
-        }
-
-        // Check karo ki is tabId par pehle access hua hai ya nahi
-        if (localStorage.getItem("accessed_" + tabId)) {
+        // Tab Tracking: Refresh hote hi localStorage check karega
+        if (localStorage.getItem("is_blocked")) {
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('accessPopup').style.display = 'flex';
         } else {
-            localStorage.setItem("accessed_" + tabId, "true");
             document.getElementById("passwordText").innerHTML = generateKey();
             
+            // 1 Minute (60000 ms) baad refresh ka trigger
+            setTimeout(function() {
+                localStorage.setItem("is_blocked", "true");
+                location.reload();
+            }, 60000); 
+
             function timer(){ const now=getISTDate(); const end=getISTDate(); end.setHours(24,0,0,0); const diff=end-now; if(diff<=0){ location.reload(); return; } const h=Math.floor(diff/3600000); const m=Math.floor(diff%3600000/60000); const s=Math.floor(diff%60000/1000); document.getElementById("timer").innerHTML=String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(s).padStart(2,"0")+"s"; }
             timer(); setInterval(timer, 1000);
         }
