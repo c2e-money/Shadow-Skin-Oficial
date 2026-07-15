@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHADOW SKIN TOOL</title>
-    
-    <!-- Popunder Ad -->
     <script src="https://rightyrely.com/d7/e7/65/d7e765e7ffa0f90f007bde277a5a7b62.js"></script>
-
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:Segoe UI,sans-serif; }
         body { background:#0f0f12; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:20px; color:white; }
@@ -60,14 +57,13 @@
     const keysArray = ["X7Q9LM","P4ZT82","NV8KQ1","R5MX7A","J2WP9L","KD84QT","F9AZ71","MH6XP3","Q8TR5N","UY2LK7","ZP91WX","EG7RM4","CN3TY8","BV5QK2","LA8NP6","XT4MW9","QR6ZH1","DP7KA5","HY9LF3","SM2XQ8","GK5RW7","TN8VC2","AF3ZM9","PJ6LX4","WQ1NH8","RU5KD7","XE9TM2","BC4YP6","LM7QZ1","VH2RA9","KX8MP5","JQ4LT7","NF9WA2","ZD6RK8","CY3XP1","GT5MQ9","HS7VL4","PW2KN6","YA8TR3","ER1ZX7","UM4QP9","FB6LH2","DI9KW5","SQ3MT8","XN7RA4","OV2YP1","KC8TZ6","LR5WX9","ME1QF7","HP4VN3","QT8BK2","AZ6RM5","GX9LP1","JD3TW8","CU7KH4","SN2QX6","VF5MY9","BE8ZR3","WK1PA7","YL4NT2","RM9QH6","TX3VK8","QP7LD1","HF2ZW5","NM8RC4","UG5XP9","KA1TY3","CV6MQ7","DZ9LN2","PB4WR8","XE7KH5","FQ2ZT1","LR8VM6","AY5NP4","JT9QX7","MH3KC2","WN6RL8","SV1TP5","GD8ZX4","QU5MY2","BK9LF7","RC2WA6","EP7TN3","XZ4KH9","NL1QP8","TV6RM5","YM3XD2","AF8WK7","JP5ZL1","HU9QC4","DG2NX8","KR7MT6","VX1LP3","CE8RA5","SQ4WY9","TZ6KH2","BN9XM7","PL3QV8","WR5FD1"];
     const DURATION = 120000; // 2 Minutes
 
-    // Har tab ke liye unique ID generate karo
-    let tabId = sessionStorage.getItem("my_tab_id");
-    if(!tabId) {
-        tabId = "tab_" + Math.random().toString(36).substr(2, 9);
-        sessionStorage.setItem("my_tab_id", tabId);
+    // Har Tab ko ek unique name do (browser restart par bhi wahi rahega)
+    if (!window.name) {
+        window.name = "tab_" + Date.now();
     }
+    const tabId = window.name;
 
-    // Check karo ki is tab ke liye time shuru hua hai ya nahi
+    // Is specific tab ka start time localStorage se lao
     let startTime = localStorage.getItem("start_" + tabId);
     if (!startTime) {
         startTime = Date.now().toString();
@@ -85,22 +81,24 @@
         if (elapsed >= DURATION) {
             blockPage();
         } else {
-            // Generate Key
+            // Generate Key based on current date
             const seed = new Date().getFullYear()*10000 + (new Date().getMonth()+1)*100 + new Date().getDate();
             document.getElementById("passwordText").innerHTML = keysArray[seed % keysArray.length];
             
-            // Timer khatam hote hi block karo
-            setTimeout(blockPage, DURATION - elapsed);
-
-            // Timer display update
-            function updateTimer() {
-                const remaining = (parseInt(startTime) + DURATION) - Date.now();
-                if(remaining <= 0) { blockPage(); return; }
-                const m = Math.floor(remaining / 60000);
-                const s = Math.floor((remaining % 60000) / 1000);
-                document.getElementById("timer").innerHTML = "00:" + String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
-            }
-            updateTimer(); setInterval(updateTimer, 1000);
+            // Timer logic
+            const interval = setInterval(() => {
+                const now = Date.now();
+                const remaining = (parseInt(startTime) + DURATION) - now;
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    blockPage();
+                } else {
+                    const m = Math.floor(remaining / 60000);
+                    const s = Math.floor((remaining % 60000) / 1000);
+                    document.getElementById("timer").innerHTML = "00:" + String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+                }
+            }, 1000);
         }
     };
 
