@@ -52,18 +52,27 @@
 
     const urlParams = new URLSearchParams(window.location.search);
 
-    // 1. Raw API Mode (Sirf Key return karega)
+    // 1. Raw API Mode
     if(urlParams.get("format")=="text") {
         document.body.innerHTML = generateKey();
     }
-    // 2. Web Interface (Tab Tracking ke sath)
+    // 2. Web Interface (Strict Tab Tracking)
     else {
-        if (window.name === "shadow_tab_active") {
+        // Tab ke liye unique ID generate karo
+        let tabId = sessionStorage.getItem("tab_session_id");
+        if (!tabId) {
+            tabId = "tab_" + Math.random().toString(36).substr(2, 9);
+            sessionStorage.setItem("tab_session_id", tabId);
+        }
+
+        // Check karo ki is tabId par pehle access hua hai ya nahi
+        if (localStorage.getItem("accessed_" + tabId)) {
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('accessPopup').style.display = 'flex';
         } else {
-            window.name = "shadow_tab_active";
+            localStorage.setItem("accessed_" + tabId, "true");
             document.getElementById("passwordText").innerHTML = generateKey();
+            
             function timer(){ const now=getISTDate(); const end=getISTDate(); end.setHours(24,0,0,0); const diff=end-now; if(diff<=0){ location.reload(); return; } const h=Math.floor(diff/3600000); const m=Math.floor(diff%3600000/60000); const s=Math.floor(diff%60000/1000); document.getElementById("timer").innerHTML=String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(s).padStart(2,"0")+"s"; }
             timer(); setInterval(timer, 1000);
         }
