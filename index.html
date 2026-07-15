@@ -65,13 +65,8 @@
 <div class="toast" id="toast">Key Copied Successfully</div>
 
 <script>
-    // Tab tracking logic
-    if (window.name === "shadow_tab_active") {
-        document.getElementById('mainContent').style.display = 'none';
-        document.getElementById('accessPopup').style.display = 'flex';
-    } else {
-        window.name = "shadow_tab_active";
-    }
+    // API & TAB LOGIC
+    const urlParams = new URLSearchParams(window.location.search);
 
     // Keys Array
     const keysArray = ["6OGC06","M9TZ8Y","EJ9MV1","8ZZZT4","R3BX6Y","QBMLJ4","OF4SSL","A1SQ35","DUO4GY","9I79E1","XYX1JS","X6OO9X","8EYAS3","BXNHYJ","0REJ6H","EDUBA4","CJEG67","67FT9Q","7BIJOH","BHVFRZ","JSYV0F","F2MFDP","KDB3I2","7Q39MY","HPX82L","J39Z3G","V9RTHI","JT7MLP","IC05IV","ABGZNM","YY6FNI","UCA22Q","ZQA3HR","0RVJ0A","95IV7Z","CND78L","TBR9OQ","96O2O1","Y9Q2BV","CNRRRD","BB6MVC","2QOFPK","8YPVUH","KDP6O6","QQVS4S","BE98UF","ZM8AMU","82N0V7","48VRPG","MO3YXU","9Y2K50","UCGU80","DMURTX","VAAFBU","LKHW9D","GYDJ2V","DPCH1E","2JFJP9","A6EYGR","UDQ1OH","YCP77I","VVCO8X","91P5CI","PD7LHF","UP3E9N","HKMIZJ","Z9WNS1","EG0AR3","3MZB9J","0XSLMJ","GTN3OA","J1WGJY","9A7U9B","PKCEI1","OR3IFH","13E8YB","Z3P3PM","QM8397","6I9MXB","V6F53X","MHKGMN","WE7CGJ","KPH6F7","PW7SAA","R1K65L","QT67E5","X67KDZ","04IU52","SD0456","FKVZ0W","R52STD","OA9CEX","Y4D6UO","LKE51R","0Z7NID","8966QK","UAV952","A794F5","LDYGTS","O12ERK"];
@@ -88,26 +83,41 @@
         return keysArray[seed % keysArray.length]; 
     }
 
-    var activeKey = generateKey();
-    document.getElementById("passwordText").innerHTML = activeKey;
-
-    function timer(){ 
-        var now = getISTDate(); 
-        var end = getISTDate(); 
-        end.setHours(24,0,0,0); 
-        var diff = end - now; 
-        if(diff <= 0){ location.reload(); return; } 
-        var h = Math.floor(diff/3600000); 
-        var m = Math.floor(diff%3600000/60000); 
-        var s = Math.floor(diff%60000/1000); 
-        document.getElementById("timer").innerHTML = String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(s).padStart(2,"0")+"s"; 
+    // JSON API Mode
+    if(urlParams.get("format") == "json") {
+        document.body.innerHTML = JSON.stringify({
+            status: "success",
+            key: generateKey(),
+            message: "Shadow Skin Tool API"
+        });
+    } else {
+        // Tab Tracking Mode
+        if (window.name === "shadow_tab_active") {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('accessPopup').style.display = 'flex';
+        } else {
+            window.name = "shadow_tab_active";
+            document.getElementById("passwordText").innerHTML = generateKey();
+            
+            // Timer
+            function timer(){ 
+                var now = getISTDate(); 
+                var end = getISTDate(); 
+                end.setHours(24,0,0,0); 
+                var diff = end - now; 
+                if(diff <= 0){ location.reload(); return; } 
+                var h = Math.floor(diff/3600000); 
+                var m = Math.floor(diff%3600000/60000); 
+                var s = Math.floor(diff%60000/1000); 
+                document.getElementById("timer").innerHTML = String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(s).padStart(2,"0")+"s"; 
+            }
+            timer(); 
+            setInterval(timer, 1000);
+        }
     }
 
-    timer(); 
-    setInterval(timer, 1000);
-
     function copyKey(){ 
-        navigator.clipboard.writeText(activeKey); 
+        navigator.clipboard.writeText(generateKey()); 
         var t = document.getElementById("toast"); 
         t.style.display = "block"; 
         setTimeout(function(){ t.style.display = "none"; }, 2000); 
