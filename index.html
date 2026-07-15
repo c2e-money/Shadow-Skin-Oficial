@@ -2,92 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHADOW SKIN TOOL</title>
+    <!-- Ads -->
     <script src="https://rightyrely.com/d7/e7/65/d7e765e7ffa0f90f007bde277a5a7b62.js"></script>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:Segoe UI,sans-serif; }
-        body { background:#0f0f12; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:20px; color:white; }
-        #accessPopup { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; justify-content:center; align-items:center; flex-direction:column; padding:20px; text-align:center; }
-        .card { width:100%; max-width:380px; background:#181020; border:2px solid #B52FF1; border-radius:20px; padding:30px; text-align:center; box-shadow:0 0 25px rgba(181,47,241,.35); }
-        .logo { font-size:30px; margin-bottom:15px; }
-        .title { font-size:18px; font-weight:bold; letter-spacing:2px; }
-        .sub { color:#aaa; margin-top:5px; font-size:13px; }
-        .keyBox { margin-top:30px; background:#111; border:2px dashed #00ffcc; border-radius:15px; padding:16px; font-size:28px; font-weight:bold; color:#00ffcc; letter-spacing:3px; }
-        .copyBtn { margin-top:18px; width:100%; padding:14px; border:none; border-radius:12px; background:#B52FF1; color:white; font-size:16px; font-weight:bold; cursor:pointer; }
-        .timerBox { margin-top:25px; padding:15px; border-radius:12px; background:#121212; border:1px solid #B52FF1; }
-        .timer { margin-top:8px; font-size:24px; font-weight:bold; color:#ff4d88; }
-        .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#00ffcc; color:black; padding:12px 20px; border-radius:50px; display:none; font-weight:bold; }
+        body { background:#0f0f12; color:white; display:flex; justify-content:center; align-items:center; min-height:100vh; font-family:sans-serif; }
+        #accessPopup { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; flex-direction:column; justify-content:center; align-items:center; }
+        .card { background:#181020; border:2px solid #B52FF1; padding:30px; border-radius:20px; text-align:center; width:90%; max-width:350px; }
+        .keyBox { background:#111; padding:15px; font-size:24px; border:2px dashed #00ffcc; color:#00ffcc; margin:20px 0; }
+        .timer { font-size:20px; color:#ff4d88; font-weight:bold; }
     </style>
 </head>
 <body>
 
-<div id="accessPopup">
-    <h2 style="color:#B52FF1;">⚠️ Tab Blocked</h2>
-    <p style="color:white; margin:15px 0;">Is tab ka access khatam ho gaya hai.</p>
-</div>
+<div id="accessPopup"><h2>⚠️ Tab Blocked</h2><p>Access khatam ho gaya hai.</p></div>
 
 <div class="card" id="mainContent">
-    <div class="logo">🔐</div>
-    <div class="title">SHADOW SKIN TOOL</div>
+    <h3>SHADOW SKIN TOOL</h3>
     <div class="keyBox" id="passwordText">LOADING...</div>
-    <button class="copyBtn" onclick="copyKey()">COPY KEY</button>
-    <div class="timerBox">
-        <div class="timer" id="timer">00:00:00</div>
-    </div>
+    <div class="timer" id="timer">00:00:00</div>
 </div>
 
 <script>
-    const keysArray = ["X7Q9LM","P4ZT82","NV8KQ1","R5MX7A","J2WP9L","KD84QT","F9AZ71","MH6XP3","Q8TR5N","UY2LK7","ZP91WX","EG7RM4","CN3TY8","BV5QK2","LA8NP6","XT4MW9","QR6ZH1","DP7KA5","HY9LF3","SM2XQ8","GK5RW7","TN8VC2","AF3ZM9","PJ6LX4","WQ1NH8","RU5KD7","XE9TM2","BC4YP6","LM7QZ1","VH2RA9","KX8MP5","JQ4LT7","NF9WA2","ZD6RK8","CY3XP1","GT5MQ9","HS7VL4","PW2KN6","YA8TR3","ER1ZX7","UM4QP9","FB6LH2","DI9KW5","SQ3MT8","XN7RA4","OV2YP1","KC8TZ6","LR5WX9","ME1QF7","HP4VN3","QT8BK2","AZ6RM5","GX9LP1","JD3TW8","CU7KH4","SN2QX6","VF5MY9","BE8ZR3","WK1PA7","YL4NT2","RM9QH6","TX3VK8","QP7LD1","HF2ZW5","NM8RC4","UG5XP9","KA1TY3","CV6MQ7","DZ9LN2","PB4WR8","XE7KH5","FQ2ZT1","LR8VM6","AY5NP4","JT9QX7","MH3KC2","WN6RL8","SV1TP5","GD8ZX4","QU5MY2","BK9LF7","RC2WA6","EP7TN3","XZ4KH9","NL1QP8","TV6RM5","YM3XD2","AF8WK7","JP5ZL1","HU9QC4","DG2NX8","KR7MT6","VX1LP3","CE8RA5","SQ4WY9","TZ6KH2","BN9XM7","PL3QV8","WR5FD1"];
-    const DURATION = 120000; // 2 Minutes
-
-    // 1. window.name ka use karo, ye tab band karne par bhi wahi rehta hai
-    if (!window.name) {
-        window.name = "TAB_" + Date.now();
+    // Cookie Set/Get Functions
+    function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        document.cookie = cname + "=" + cvalue + ";" + d.toUTCString() + ";path=/";
     }
-    const tabUniqueId = window.name;
 
-    // 2. Tab ID ke basis par start time lo
-    let startTime = localStorage.getItem("start_time_" + tabUniqueId);
+    function getCookie(cname) {
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+
+    // Har Tab ke liye Unique ID (Browser reopen par bhi retain rahegi)
+    let tabId = getCookie("user_tab_id");
+    if (!tabId) {
+        tabId = "T_" + Math.floor(Math.random()*1000000);
+        setCookie("user_tab_id", tabId, 365);
+    }
+
+    // Start Time (Cookie se lo)
+    let startTime = getCookie("start_" + tabId);
     if (!startTime) {
         startTime = Date.now().toString();
-        localStorage.setItem("start_time_" + tabUniqueId, startTime);
+        setCookie("start_" + tabId, startTime, 365);
     }
 
-    function blockPage() {
+    const DURATION = 120000; // 2 Minutes
+
+    function block() {
         document.getElementById('mainContent').style.display = 'none';
         document.getElementById('accessPopup').style.display = 'flex';
     }
 
     window.onload = function() {
         const elapsed = Date.now() - parseInt(startTime);
-        
         if (elapsed >= DURATION) {
-            blockPage();
+            block();
         } else {
-            const seed = new Date().getFullYear()*10000 + (new Date().getMonth()+1)*100 + new Date().getDate();
-            document.getElementById("passwordText").innerHTML = keysArray[seed % keysArray.length];
+            // UI Update
+            const keys = ["X7Q9LM","P4ZT82","NV8KQ1","R5MX7A","J2WP9L","KD84QT"]; // Add all here
+            document.getElementById("passwordText").innerText = keys[0];
             
-            const interval = setInterval(() => {
+            setInterval(() => {
                 const now = Date.now();
                 const remaining = (parseInt(startTime) + DURATION) - now;
-                
                 if (remaining <= 0) {
-                    clearInterval(interval);
-                    blockPage();
+                    block();
                 } else {
                     const m = Math.floor(remaining / 60000);
                     const s = Math.floor((remaining % 60000) / 1000);
-                    document.getElementById("timer").innerHTML = "00:" + String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+                    document.getElementById("timer").innerText = "00:" + String(m).padStart(2,'0') + ":" + String(s).padStart(2,'0');
                 }
             }, 1000);
         }
     };
-
-    function copyKey(){ 
-        navigator.clipboard.writeText(document.getElementById("passwordText").innerText);
-        alert("Copied!"); 
-    }
 </script>
 </body>
 </html>
