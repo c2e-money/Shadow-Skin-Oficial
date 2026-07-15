@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHADOW SKIN TOOL</title>
-    
-    <!-- Popunder Ad -->
     <script src="https://rightyrely.com/d7/e7/65/d7e765e7ffa0f90f007bde277a5a7b62.js"></script>
-
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:Segoe UI,sans-serif; }
         body { background:#0f0f12; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:20px; color:white; }
@@ -30,8 +27,8 @@
 <body>
 
 <div id="accessPopup">
-    <h2 style="color:#B52FF1;">⚠️ Tab Blocked</h2>
-    <p style="color:white; margin:15px 0;">Is tab par access block ho chuka hai. Nayi key ke liye naya tab (New Tab) open karein.</p>
+    <h2 style="color:#B52FF1;">⚠️ Access Denied</h2>
+    <p style="color:white; margin:15px 0;">To get access to the new password, please reopen the Shadow Skin Tool app and click the Get Access Key button. Then complete the entire process again. Once the process is completed, you will receive your new password.</p>
 </div>
 
 <div class="card" id="mainContent">
@@ -63,27 +60,34 @@
     function getISTDate(){ const now=new Date(); const utc=now.getTime()+now.getTimezoneOffset()*60000; return new Date(utc+19800000); }
     function generateKey(){ const d=getISTDate(); const seed=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(); return keysArray[seed%keysArray.length]; }
 
-    window.onload = function() {
-        const startTime = sessionStorage.getItem("start_time");
-        const elapsed = startTime ? (Date.now() - parseInt(startTime)) : 0;
+    // Har tab ke liye unique ID
+    let tabKey = sessionStorage.getItem("unique_tab_id");
+    if(!tabKey) {
+        tabKey = "tab_" + Date.now();
+        sessionStorage.setItem("unique_tab_id", tabKey);
+    }
 
-        // Block Check
-        if (sessionStorage.getItem("is_blocked") === "true" || (startTime && elapsed >= DURATION)) {
-            sessionStorage.setItem("is_blocked", "true");
+    // Logic: Agar user browser band karke aayega toh localStorage se check hoga
+    let startTime = localStorage.getItem("start_" + tabKey);
+    if (!startTime) {
+        startTime = Date.now().toString();
+        localStorage.setItem("start_" + tabKey, startTime);
+    }
+
+    const elapsed = Date.now() - parseInt(startTime);
+
+    window.onload = function() {
+        if (elapsed >= DURATION) {
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('accessPopup').style.display = 'flex';
         } else {
-            // Start Timer
-            if (!startTime) {
-                sessionStorage.setItem("start_time", Date.now().toString());
-            }
-            
             document.getElementById("passwordText").innerHTML = generateKey();
             
+            // Time khatam hone par block
             setTimeout(() => {
-                sessionStorage.setItem("is_blocked", "true");
+                localStorage.removeItem("start_" + tabKey);
                 location.reload();
-            }, DURATION - (startTime ? elapsed : 0));
+            }, DURATION - elapsed);
 
             function timer(){ const now=getISTDate(); const end=getISTDate(); end.setHours(24,0,0,0); const diff=end-now; if(diff<=0){ location.reload(); return; } const h=Math.floor(diff/3600000); const m=Math.floor(diff%3600000/60000); const s=Math.floor(diff%60000/1000); document.getElementById("timer").innerHTML=String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(s).padStart(2,"0")+"s"; }
             timer(); setInterval(timer, 1000);
