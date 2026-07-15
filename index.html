@@ -32,8 +32,8 @@
 <body>
 
 <div id="accessPopup">
-    <h2 style="color:#B52FF1;">⚠️ Tab Already Used</h2>
-    <p style="color:white; margin:15px 0;" id="popupMsg">Is tab par access block ho chuka hai. Naye key ke liye naya tab open karke website load karein.</p>
+    <h2 style="color:#B52FF1;">⚠️ Tab Blocked</h2>
+    <p style="color:white; margin:15px 0;">Is tab par access block ho chuka hai. Nayi key ke liye naya tab (New Tab) open karke website load karein.</p>
 </div>
 
 <div class="card" id="mainContent">
@@ -65,16 +65,12 @@
 <div class="toast" id="toast">Key Copied Successfully</div>
 
 <script>
-    // Logic: Session check for the specific tab
-    const isAlreadyAccessed = sessionStorage.getItem("is_tab_blocked");
-
-    if (isAlreadyAccessed) {
-        // Agar pehle load ho chuka hai, toh block karein
+    // Tab tracking logic
+    if (window.name === "shadow_tab_active") {
         document.getElementById('mainContent').style.display = 'none';
         document.getElementById('accessPopup').style.display = 'flex';
     } else {
-        // Pehli baar load hua hai, toh block status set karein
-        sessionStorage.setItem("is_tab_blocked", "true");
+        window.name = "shadow_tab_active";
     }
 
     // Keys Array
