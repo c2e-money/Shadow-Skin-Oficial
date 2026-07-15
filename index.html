@@ -12,7 +12,6 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:Segoe UI,sans-serif; }
         body { background:#0f0f12; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:20px; color:white; }
         
-        /* Popup Styles */
         #accessPopup { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; justify-content:center; align-items:center; flex-direction:column; padding:20px; text-align:center; }
         
         .card { width:100%; max-width:380px; background:#181020; border:2px solid #B52FF1; border-radius:20px; padding:30px; text-align:center; box-shadow:0 0 25px rgba(181,47,241,.35); }
@@ -32,13 +31,11 @@
 </head>
 <body>
 
-<!-- Access Denied Popup -->
 <div id="accessPopup">
-    <h2 style="color:#B52FF1;">⚠️ Access Denied</h2>
-    <p style="color:white; margin:15px 0;">App pehle Shadow Skin Tool app ko open karo, phir 'Get Key' par click karke process complete karke aao taab jaake apko new key milega.</p>
+    <h2 style="color:#B52FF1;">⚠️ Tab Already Used</h2>
+    <p style="color:white; margin:15px 0;" id="popupMsg">Is tab par access block ho chuka hai. Naye key ke liye naya tab open karke website load karein.</p>
 </div>
 
-<!-- Main Content -->
 <div class="card" id="mainContent">
     <div class="logo">🔐</div>
     <div class="title">SHADOW SKIN TOOL</div>
@@ -52,7 +49,6 @@
     <div class="footer">Powered by Shadow Team</div>
 </div>
 
-<!-- Banner Ad Section -->
 <div class="ad-banner">
     <script>
       var atOptions = {
@@ -69,16 +65,19 @@
 <div class="toast" id="toast">Key Copied Successfully</div>
 
 <script>
-    // 1. Verification Logic
-    const urlParams = new URLSearchParams(window.location.search);
-    const isVerified = urlParams.get('status') === 'verified';
+    // Logic: Session check for the specific tab
+    const isAlreadyAccessed = sessionStorage.getItem("is_tab_blocked");
 
-    if (!isVerified) {
+    if (isAlreadyAccessed) {
+        // Agar pehle load ho chuka hai, toh block karein
         document.getElementById('mainContent').style.display = 'none';
         document.getElementById('accessPopup').style.display = 'flex';
+    } else {
+        // Pehli baar load hua hai, toh block status set karein
+        sessionStorage.setItem("is_tab_blocked", "true");
     }
 
-    // 2. Keys Array
+    // Keys Array
     const keysArray = ["6OGC06","M9TZ8Y","EJ9MV1","8ZZZT4","R3BX6Y","QBMLJ4","OF4SSL","A1SQ35","DUO4GY","9I79E1","XYX1JS","X6OO9X","8EYAS3","BXNHYJ","0REJ6H","EDUBA4","CJEG67","67FT9Q","7BIJOH","BHVFRZ","JSYV0F","F2MFDP","KDB3I2","7Q39MY","HPX82L","J39Z3G","V9RTHI","JT7MLP","IC05IV","ABGZNM","YY6FNI","UCA22Q","ZQA3HR","0RVJ0A","95IV7Z","CND78L","TBR9OQ","96O2O1","Y9Q2BV","CNRRRD","BB6MVC","2QOFPK","8YPVUH","KDP6O6","QQVS4S","BE98UF","ZM8AMU","82N0V7","48VRPG","MO3YXU","9Y2K50","UCGU80","DMURTX","VAAFBU","LKHW9D","GYDJ2V","DPCH1E","2JFJP9","A6EYGR","UDQ1OH","YCP77I","VVCO8X","91P5CI","PD7LHF","UP3E9N","HKMIZJ","Z9WNS1","EG0AR3","3MZB9J","0XSLMJ","GTN3OA","J1WGJY","9A7U9B","PKCEI1","OR3IFH","13E8YB","Z3P3PM","QM8397","6I9MXB","V6F53X","MHKGMN","WE7CGJ","KPH6F7","PW7SAA","R1K65L","QT67E5","X67KDZ","04IU52","SD0456","FKVZ0W","R52STD","OA9CEX","Y4D6UO","LKE51R","0Z7NID","8966QK","UAV952","A794F5","LDYGTS","O12ERK"];
 
     function getISTDate(){ 
